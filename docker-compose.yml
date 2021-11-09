@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+
+  kinesalite:
+    build:
+      context: .
+      dockerfile: ./kinesalite.dockerfile
+    working_dir: /workspace/
+    ports:
+      - 4567:4567
+    command: /bin/bash -c "kinesalite"
+
+  consumer:
+    build:
+      context: .
+      dockerfile: ./kinesis-consumer.dockerfile
+    working_dir: /workspace/local/
+    volumes:
+      - ./:/workspace/local
+    depends_on:
+      - kinesalite
+    command: /bin/bash -c "./exec_consumer.sh"
+
+  producer:
+    build:
+      context: .
+      dockerfile: ./kinesis-consumer.dockerfile
+    working_dir: /workspace/local/
+    volumes:
+      - ./:/workspace/local
+    depends_on:
+      - consumer
+    command: /bin/bash -c "./exec_producer.sh"
