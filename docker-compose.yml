@@ -15,20 +15,16 @@ services:
     build:
       context: .
       dockerfile: ./kinesis-consumer.dockerfile
-    working_dir: /workspace/local/
-    volumes:
-      - ./:/workspace/local
+    working_dir: /workspace/kinesis-consumer/
     depends_on:
       - kinesalite
-    command: /bin/bash -c "./exec_consumer.sh"
+    command: /bin/bash -c "sleep 3 && go run ./cmd/consumer/main.go --stream myStream --endpoint http://kinesalite:4567"
 
   producer:
     build:
       context: .
       dockerfile: ./kinesis-consumer.dockerfile
-    working_dir: /workspace/local/
-    volumes:
-      - ./:/workspace/local
+    working_dir: /workspace/kinesis-consumer/
     depends_on:
       - consumer
-    command: /bin/bash -c "./exec_producer.sh"
+    command: /bin/bash -c "cat ./cmd/producer/users.txt | go run ./cmd/producer/main.go --stream myStream --endpoint http://kinesalite:4567"
